@@ -43,7 +43,7 @@ const char* sk_path_outside_illuminance = "environment.outside.illuminance";
 const char* config_path_inside_illuminance = "/config/output/inside/illuminance";
 const char* config_path_outside_illuminance = "/config/output/outside/illuminance";
 
-unsigned int read_interval = 2000;
+unsigned int read_interval = 1000;
 
 void setup() {
   SetupLogging(ESP_LOG_DEBUG);
@@ -129,6 +129,9 @@ void setup() {
 
   sk_output_outside->connect_to(makeStatusPageItemFor("Value sent to SK for 'environment.outside.illuminance'", 1));
   sk_output_inside->connect_to(makeStatusPageItemFor("Value sent to SK for 'environment.inside.illuminance'", 2));
+
+  ConfigItem(sk_output_outside)->set_title("SKOutput for outside light sensor");
+  ConfigItem(sk_output_inside)->set_title("SKOutput for inside light sensor");
 
   // To avoid garbage collecting all shared pointers created in setup(),
   // loop from here.
