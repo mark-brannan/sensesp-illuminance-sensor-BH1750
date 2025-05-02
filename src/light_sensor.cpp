@@ -3,13 +3,14 @@
 #include "sensesp/ui/status_page_item.h"
 
 
-unsigned int default_read_interval = 1000;
+// 1 sec seems to work fine, but the repeat sensor class is also configurable.
+const unsigned int default_read_interval = 1000;
 
 LightSensor::LightSensor(const char* location, byte addr, const char* config_path)
   : lightMeter(addr),
     location(location),
     addr(addr),
-    MyRepeatSensor<float>(1000, [this]() { return readLightLevel(); }, config_path)
+    MyRepeatSensor<float>(default_read_interval, [this]() { return readLightLevel(); }, config_path)
 {
   ConfigItem(this)->set_title(String(location) + " light sensor");
 };

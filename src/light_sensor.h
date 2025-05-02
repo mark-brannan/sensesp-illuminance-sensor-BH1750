@@ -36,10 +36,5 @@ class LightSensor : public MyRepeatSensor<float> {
   const byte addr;
 };
 
-//static inline const String ConfigSchema(const 
-  //return R"###({
-//}
-
-//class IllumanceStatusPageItem
 
 #endif // LIGHT_SENSOR_H
