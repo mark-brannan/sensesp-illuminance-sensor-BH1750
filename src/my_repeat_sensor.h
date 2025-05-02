@@ -9,6 +9,7 @@ namespace sensesp {
 template <class T>
 class MyRepeatSensor : public Sensor<T> {
  public:
+
   /**
    * @brief Construct a new RepeatSensor object.
    *
@@ -26,6 +27,7 @@ class MyRepeatSensor : public Sensor<T> {
       : Sensor<T>(config_path),
         repeat_interval_ms_(repeat_interval_ms),
         returning_callback_(callback) {
+    this->load();
     repeat_event_ = event_loop()->onRepeat(repeat_interval_ms_, [this]() {
       this->emit(this->returning_callback_());
     });
@@ -50,16 +52,21 @@ class MyRepeatSensor : public Sensor<T> {
       : Sensor<T>(config_path),
         repeat_interval_ms_(repeat_interval_ms),
         emitting_callback_(callback) {
+    this->load();
     repeat_event_ = event_loop()->onRepeat(repeat_interval_ms_,
                            [this]() { emitting_callback_(this); });
   }
 
-  void reschedule_event() {
-    debugD("MyRepeatSensor::reschedule_event -> %u", repeat_interval_ms_);
+  void set_repeat_interval_ms(unsigned int repeat_interval_ms) {
+    repeat_interval_ms_ = repeat_interval_ms;
+    this->reschedule();
+  }
+
+  void reschedule() {
     if (repeat_event_) {
       event_loop()->remove(repeat_event_);
     } else {
-      debugE("MyRepeatSensor::reschedule_event -> repeat_event_ is null");
+      debugE("MyRepeatSensor::reschedule -> repeat_event_ is null");
     }
 
     if (emitting_callback_) {
@@ -70,23 +77,19 @@ class MyRepeatSensor : public Sensor<T> {
         this->emit(this->returning_callback_());
       });
     } else {
-      debugE("MyRepeatSensor::reschedule_event -> No callback set");
+      debugE("MyRepeatSensor::reschedule -> No callback set");
     }
   }
 
   bool to_json(JsonObject& doc) override {
-    debugD("MyRepeatSensor::to_json -> %u", repeat_interval_ms_);
     doc["repeat_interval_ms"] = repeat_interval_ms_;
     return true;
   }
 
   bool from_json(const JsonObject& config) override {
-    // Neither of the configuration parameters are mandatory
     if (config["repeat_interval_ms"].is<unsigned int>()) {
-      repeat_interval_ms_ = config["repeat_interval_ms"].as<unsigned int>();
+      this->set_repeat_interval_ms(config["repeat_interval_ms"].as<unsigned int>());
     }
-    debugD("MyRepeatSensor::from_json -> %u", repeat_interval_ms_);
-    reschedule_event();
     return true;
   }
 

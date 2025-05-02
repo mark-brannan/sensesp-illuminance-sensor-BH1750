@@ -1,6 +1,6 @@
-#include "light_sensor.h"
 #include "sensesp.h"
 #include "sensesp/ui/status_page_item.h"
+#include "light_sensor.h"
 
 
 // 1 sec seems to work fine, but the repeat sensor class is also configurable.
@@ -13,6 +13,7 @@ LightSensor::LightSensor(const char* location, byte addr, const char* config_pat
     MyRepeatSensor<float>(default_read_interval, [this]() { return readLightLevel(); }, config_path)
 {
   ConfigItem(this)->set_title(String(location) + " light sensor");
+  this->load();
 };
 
 void LightSensor::begin() {
