@@ -43,9 +43,9 @@ inline const char* get_sk_out_config_path(const char* location) {
 
 inline const char* get_status_page_item_name(const char* location) {
     if (strcmp(location, "inside") == 0) {
-        return "Value sent to SK from inside light sensor";
+        return "Value sent to SK from 'inside' light sensor";
     } else if (strcmp(location, "outside") == 0) {
-        return "Value sent to SK from outside light sensor";
+        return "Value sent to SK from 'outside' light sensor";
     } else {
         return String("Value sent to SK from '" + String(location) + "' light sensor").c_str();
     }
@@ -66,9 +66,7 @@ SKOutputIlluminance::SKOutputIlluminance(
     const char* config_path,
     const char* status_page_name
 ) : SKOutputFloat(sk_path, config_path, "lux"),
-    status_page_item_(status_page_name, -1., kUIGroup, kUIOrder
-) {
+    status_page_item_(status_page_name, -1., kUIGroup, kUIOrder1) {
     ConfigItem(this)->set_title("SK Output for '" + String(location) + "' illuminance");
     this->connect_to(status_page_item_);
 };
-

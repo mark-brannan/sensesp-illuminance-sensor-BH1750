@@ -30,11 +30,36 @@ class LightSensor : public MyRepeatSensor<float> {
 
   float readLightLevel();
 
+  virtual bool to_json(JsonObject& doc) override {
+    doc["repeat_interval_ms"] = repeat_interval_ms_;
+    return true;
+  }
+
+  virtual bool from_json(const JsonObject& config) override {
+    // configuration parameters non-mandatory
+    if (!config["repeat_interval_ms"].is<unsigned int>()) {
+      return false;
+    }
+    set_repeat_interval_ms(config["repeat_interval_ms"].as<unsigned int>());
+    return true;
+  }
+
  private:
   BH1750 lightMeter;
-  const char* location;
+  String location;
   const byte addr;
+  float prior_lux = -2.;
+  String config_title;
+
+  void adjust_MTreg(float lux);
+
+  // MTreg is "Measurement Time Register" and is used to set the sensitivity of the sensor
+  byte prior_MTreg = 0x45; // 69, default MTreg value
 };
 
+// TODO: should any calibration values be configurable?
+inline const String ConfigSchema(const LightSensor& obj) {
+  return R"###({"type":"object","properties":{"repeat_interval_ms":{"title":"Repeat interval (ms)","type":"integer"}}})###";
+}
 
 #endif // LIGHT_SENSOR_H
