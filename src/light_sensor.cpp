@@ -32,7 +32,6 @@ void LightSensor::begin() {
 
 float LightSensor::readLightLevel() {
     while (!lightMeter.measurementReady(true)) {
-      debugD("Waiting for %s light measurement to be ready", location);
       yield();
     }
     float lux = lightMeter.readLightLevel();
